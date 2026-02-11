@@ -1,9 +1,11 @@
+import java.util.Arrays;
+
 public class AfishaManager {
     private Movie[] movies;
     private int limit;
 
     public AfishaManager() {
-        this.limit = 10;
+        this.limit = 10; // лимит по умолчанию
         this.movies = new Movie[0];
     }
 
@@ -24,17 +26,17 @@ public class AfishaManager {
     }
 
     public Movie[] findLast() {
-        int resultLength;
-        if (movies.length < limit) {
-            resultLength = movies.length;
-        } else {
-            resultLength = limit;
-        }
-
+        int resultLength = Math.min(movies.length, limit);
         Movie[] result = new Movie[resultLength];
+
         for (int i = 0; i < resultLength; i++) {
             result[i] = movies[movies.length - 1 - i];
         }
         return result;
+    }
+
+    // ✅ ГЕТТЕР для limit - чтобы тесты не использовали магические числа!
+    public int getLimit() {
+        return limit;
     }
 }
