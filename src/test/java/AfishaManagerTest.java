@@ -1,6 +1,5 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class AfishaManagerTest {
 
@@ -32,43 +31,49 @@ public class AfishaManagerTest {
 
     @Test
     public void shouldFindLastMoviesWithDefaultLimit() {
-        AfishaManager manager = new AfishaManager(); // лимит = 10 по умолчанию
+        AfishaManager manager = new AfishaManager(); // лимит = 5 по умолчанию
 
-        for (int i = 1; i <= 12; i++) {
-            manager.addMovie(new Movie("Фильм " + i));
-        }
-
-        Movie[] last = manager.findLast();
-
-        // Проверяем размер - должен быть равен лимиту менеджера
-        assertEquals(manager.getLimit(), last.length);
-
-        // Проверяем порядок (обратный)
-        assertEquals("Фильм 12", last[0].getTitle());
-        assertEquals("Фильм 11", last[1].getTitle());
-        assertEquals("Фильм 10", last[2].getTitle());
-        assertEquals("Фильм 3", last[9].getTitle());
-    }
-
-    @Test
-    public void shouldFindLastMoviesWithCustomLimit() {
-        int customLimit = 5;
-        AfishaManager manager = new AfishaManager(customLimit);
-
+        // Добавляем 7 фильмов
         for (int i = 1; i <= 7; i++) {
             manager.addMovie(new Movie("Фильм " + i));
         }
 
         Movie[] last = manager.findLast();
 
-        assertEquals(customLimit, last.length);
+        // Должно вернуть 5 фильмов (лимит по умолчанию)
+        assertEquals(manager.getLimit(), last.length);
+        assertEquals(5, last.length);
+
+        // Проверяем порядок (обратный)
         assertEquals("Фильм 7", last[0].getTitle());
+        assertEquals("Фильм 6", last[1].getTitle());
+        assertEquals("Фильм 5", last[2].getTitle());
+        assertEquals("Фильм 4", last[3].getTitle());
         assertEquals("Фильм 3", last[4].getTitle());
     }
 
     @Test
+    public void shouldFindLastMoviesWithCustomLimit() {
+        int customLimit = 3;
+        AfishaManager manager = new AfishaManager(customLimit);
+
+        // Добавляем 7 фильмов
+        for (int i = 1; i <= 7; i++) {
+            manager.addMovie(new Movie("Фильм " + i));
+        }
+
+        Movie[] last = manager.findLast();
+
+        // Должно вернуть customLimit = 3 фильма
+        assertEquals(customLimit, last.length);
+        assertEquals("Фильм 7", last[0].getTitle());
+        assertEquals("Фильм 6", last[1].getTitle());
+        assertEquals("Фильм 5", last[2].getTitle());
+    }
+
+    @Test
     public void shouldFindLastMoviesWhenLessThanLimit() {
-        AfishaManager manager = new AfishaManager(10);
+        AfishaManager manager = new AfishaManager(5);
 
         Movie movie1 = new Movie("Бладшот");
         Movie movie2 = new Movie("Вперёд");
@@ -78,8 +83,12 @@ public class AfishaManagerTest {
         manager.addMovie(movie2);
         manager.addMovie(movie3);
 
+        Movie[] last = manager.findLast();
+
+        // Фильмов меньше лимита - возвращаем все 3
+        assertEquals(3, last.length);
         Movie[] expected = {movie3, movie2, movie1};
-        assertArrayEquals(expected, manager.findLast());
+        assertArrayEquals(expected, last);
     }
 
     @Test
@@ -117,10 +126,36 @@ public class AfishaManagerTest {
         manager.addMovie(invisible);
         manager.addMovie(trolls);
 
+        // Проверяем findAll
         Movie[] expectedAll = {bloodshot, forward, belgrade, gentlemen, invisible, trolls};
         assertArrayEquals(expectedAll, manager.findAll());
 
-        Movie[] expectedLast = {trolls, invisible, gentlemen, belgrade, forward, bloodshot};
+        // Проверяем findLast - должно вернуть 5 последних
+        Movie[] expectedLast = {trolls, invisible, gentlemen, belgrade, forward};
         assertArrayEquals(expectedLast, manager.findLast());
+    }
+
+    @Test
+    public void shouldWorkWithDifferentLimits() {
+        // Проверяем лимит 3
+        AfishaManager manager1 = new AfishaManager(3);
+        for (int i = 1; i <= 5; i++) {
+            manager1.addMovie(new Movie("Фильм " + i));
+        }
+        assertEquals(3, manager1.findLast().length);
+
+        // Проверяем лимит 7
+        AfishaManager manager2 = new AfishaManager(7);
+        for (int i = 1; i <= 5; i++) {
+            manager2.addMovie(new Movie("Фильм " + i));
+        }
+        assertEquals(5, manager2.findLast().length); // Фильмов меньше лимита
+
+        // Проверяем лимит 0 (крайний случай)
+        AfishaManager manager3 = new AfishaManager(0);
+        for (int i = 1; i <= 5; i++) {
+            manager3.addMovie(new Movie("Фильм " + i));
+        }
+        assertEquals(0, manager3.findLast().length);
     }
 }
