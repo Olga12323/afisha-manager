@@ -1,37 +1,28 @@
-import java.util.Arrays;
-
 public class AfishaManager {
-    private static final int DEFAULT_LIMIT = 5; // 👈 ПО УМОЛЧАНИЮ 5!
-
-    private Movie[] movies;
+    private Movie[] movies = new Movie[0];
     private int limit;
 
-    // Конструктор по умолчанию - лимит = 5
     public AfishaManager() {
-        this.limit = DEFAULT_LIMIT;
-        this.movies = new Movie[0];
+        this.limit = 5;
     }
 
-    // Конструктор с кастомным лимитом
     public AfishaManager(int limit) {
         this.limit = limit;
-        this.movies = new Movie[0];
     }
 
-    // Добавление фильма
     public void addMovie(Movie movie) {
         Movie[] newMovies = new Movie[movies.length + 1];
-        System.arraycopy(movies, 0, newMovies, 0, movies.length);
-        newMovies[movies.length] = movie;
+        for (int i = 0; i < movies.length; i++) {
+            newMovies[i] = movies[i];
+        }
+        newMovies[newMovies.length - 1] = movie;
         movies = newMovies;
     }
 
-    // Все фильмы в порядке добавления
     public Movie[] findAll() {
         return movies;
     }
 
-    // Последние фильмы в обратном порядке (до limit штук)
     public Movie[] findLast() {
         int resultLength;
         if (movies.length < limit) {
@@ -47,7 +38,6 @@ public class AfishaManager {
         return result;
     }
 
-    // Геттер для лимита
     public int getLimit() {
         return limit;
     }
